@@ -15,110 +15,103 @@ struct EditorView: View {
     
     @State private var processedImage: UIImage?
     
-    var magnificationGesture: some Gesture {
-        MagnificationGesture()
-            .onChanged { value in
-                scale = lastScale * value
-            }
-            .onEnded { _ in
-                lastScale = scale
-            }
-    }
-    
-    var dragGesture: some Gesture {
-        DragGesture()
-            .onChanged { value in
-                offset = CGSize(width: lastOffset.width + value.translation.width, height: lastOffset.height + value.translation.height)
-            }
-            .onEnded { _ in
-                lastOffset = offset
-            }
-    }
-    
-    var imageCanvas: some View {
-        Group {
-            if let processed = processedImage {
-                Image(uiImage: processed)
-            } else {
-                Image(uiImage: originalImage)
-            }
-        }
-        .resizable()
-        .aspectRatio(contentMode: .fit)
-        .scaleEffect(scale)
-        .offset(offset)
-    }
-    
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                ZStack {
-                    imageCanvas
-                        .gesture(magnificationGesture)
-                        .simultaneousGesture(dragGesture)
+            ZStack {
+                if viewModel.isDarkMode {
+                    Color.black.ignoresSafeArea()
+                } else {
+                    Color.white.ignoresSafeArea()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipShape(Rectangle())
-                .overlay(
-                    Rectangle()
-                        .stroke(viewModel.isDarkMode ? Color.white.opacity(0.12) : Color.black.opacity(0.12), lineWidth: 1)
-                        .padding(24)
-                        .allowsHitTesting(false)
-                )
                 
-                VStack(spacing: 30) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("blur refraction")
-                                .font(.system(size: 11, weight: .regular, design: .monospaced))
-                                .foregroundStyle(.gray)
-                            Spacer()
-                            Text(String(format: "%.2f", blurAmount))
-                                .font(.system(size: 11, weight: .regular, design: .monospaced))
-                                .foregroundStyle(.gray)
-                        }
-                        Slider(value: Binding(
-                            get: { blurAmount },
-                            set: { newValue in
-                                blurAmount = newValue
-                                updateEffect()
-                            }
-                        ), in: 0...1)
-                        .tint(viewModel.isDarkMode ? .white : .black)
+                VStack(spacing: 0) {
+                    ZStack {
+                        Image(uiImage: processedImage ?? originalImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .scaleEffect(scale)
+                            .offset(offset)
+                            .gesture(
+                                MagnificationGesture()
+                                    .onChanged { value in
+                                        scale = lastScale * value
+                                    }
+                                    .onEnded { _ in
+                                        lastScale = scale
+                                    }
+                            )
+                            .simultaneousGesture(
+                                DragGesture()
+                                    .onChanged { value in
+                                        offset = CGSize(width: lastOffset.width + value.translation.width, height: lastOffset.height + value.translation.height)
+                                    }
+                                    .onEnded { _ in
+                                        lastOffset = offset
+                                    }
+                            )
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipShape(Rectangle())
+                    .overlay(
+                        Rectangle()
+                            .stroke(viewModel.isDarkMode ? Color.white.opacity(0.12) : Color.black.opacity(0.12), lineWidth: 1)
+                            .padding(24)
+                            .allowsHitTesting(false)
+                    )
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("glass contrast")
-                                .font(.system(size: 11, weight: .regular, design: .monospaced))
-                                .foregroundStyle(.gray)
-                            Spacer()
-                            Text(String(format: "%.2f", contrastAmount))
-                                .font(.system(size: 11, weight: .regular, design: .monospaced))
-                                .foregroundStyle(.gray)
-                        }
-                        Slider(value: Binding(
-                            get: { contrastAmount },
-                            set: { newValue in
-                                contrastAmount = newValue
-                                updateEffect()
+                    VStack(spacing: 30) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("blur refraction")
+                                    .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.gray)
+                                Spacer()
+                                Text(String(format: "%.2f", blurAmount))
+                                    .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.gray)
                             }
-                        ), in: 0.5...1.5)
-                        .tint(viewModel.isDarkMode ? .white : .black)
+                            Slider(value: Binding(
+                                get: { blurAmount },
+                                set: { newValue in
+                                    blurAmount = newValue
+                                    updateEffect()
+                                }
+                            ), in: 0...1)
+                            .tint(viewModel.isDarkMode ? .white : .black)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("glass contrast")
+                                    .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.gray)
+                                Spacer()
+                                Text(String(format: "%.2f", contrastAmount))
+                                    .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.gray)
+                            }
+                            Slider(value: Binding(
+                                get: { contrastAmount },
+                                set: { newValue in
+                                    contrastAmount = newValue
+                                    updateEffect()
+                                }
+                            ), in: 0.5...1.5)
+                            .tint(viewModel.isDarkMode ? .white : .black)
+                        }
                     }
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 38)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            .stroke(LinearGradient(colors: [.white.opacity(0.3), .clear], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+                            .blendMode(.overlay)
+                    )
+                    .padding(16)
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 38)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 32, style: .continuous)
-                        .stroke(LinearGradient(colors: [.white.opacity(0.3), .clear], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
-                        .blendMode(.overlay)
-                )
-                .padding(16)
             }
-            .background(viewModel.isDarkMode ? Color.black.ignoresSafeArea() : Color.white.ignoresSafeArea())
             .navigationTitle("liquid glass studio")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -153,5 +146,17 @@ struct EditorView: View {
     
     private func updateEffect() {
         processedImage = viewModel.applyFilters(image: originalImage, blur: blurAmount, contrast: contrastAmount)
+    }
+}
+
+extension UIDevice {
+    static let deviceDidShakeNotification = Notification.Name("deviceDidShakeNotification")
+}
+
+extension UIWindow {
+    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
+        }
     }
 }
