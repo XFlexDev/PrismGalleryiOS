@@ -56,15 +56,15 @@ struct EditorView: View {
                     .clipShape(Rectangle())
                     .overlay(
                         Rectangle()
-                            .stroke(viewModel.isDarkMode ? Color.white.opacity(0.15) : Color.black.opacity(0.15), lineWidth: 1)
-                            .padding(30)
+                            .stroke(viewModel.isDarkMode ? Color.white.opacity(0.12) : Color.black.opacity(0.12), lineWidth: 1)
+                            .padding(24)
                             .allowsHitTesting(false)
                     )
                     
-                    VStack(spacing: 28) {
-                        VStack(alignment: .leading, spacing: 6) {
+                    VStack(spacing: 30) {
+                        VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("blur")
+                                Text("blur refraction")
                                     .font(.system(size: 11, weight: .regular, design: .monospaced))
                                     .foregroundStyle(.gray)
                                 Spacer()
@@ -77,36 +77,43 @@ struct EditorView: View {
                                 .onChange(of: blurAmount) { _ in updateEffect() }
                         }
                         
-                        VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("contrast")
+                                Text("glass contrast")
                                     .font(.system(size: 11, weight: .regular, design: .monospaced))
                                     .foregroundStyle(.gray)
                                 Spacer()
                                 Text(String(format: "%.2f", contrastAmount))
                                     .font(.system(size: 11, weight: .regular, design: .monospaced))
                                     .foregroundStyle(.gray)
-                                }
+                            }
                             Slider(value: $contrastAmount, in: 0.5...1.5)
                                 .tint(viewModel.isDarkMode ? .white : .black)
                                 .onChange(of: contrastAmount) { _ in updateEffect() }
                         }
                     }
                     .padding(.horizontal, 32)
-                    .padding(.vertical, 36)
-                    .background(viewModel.isDarkMode ? Color.white.opacity(0.02) : Color.black.opacity(0.02))
+                    .padding(.vertical, 38)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            .stroke(LinearGradient(colors: [.white.opacity(0.3), .clear], startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
+                            .blendMode(.overlay)
+                    )
+                    .padding(16)
                 }
             }
-            .navigationTitle("refine")
+            .navigationTitle("liquid glass studio")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("dismiss") { dismiss() }
+                    Button("cancel") { dismiss() }
                         .font(.system(size: 13, weight: .regular, design: .monospaced))
                         .foregroundStyle(viewModel.isDarkMode ? .white : .black)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("commit") { dismiss() }
+                    Button("apply") { dismiss() }
                         .font(.system(size: 13, weight: .regular, design: .monospaced))
                         .foregroundStyle(viewModel.isDarkMode ? .white : .black)
                 }
@@ -115,8 +122,8 @@ struct EditorView: View {
                 processedImage = originalImage
             }
             .onReceive(NotificationCenter.default.publisher(for: UIDevice.deviceDidShakeNotification)) { _ in
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                withAnimation(.smooth(duration: 0.25)) {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                     blurAmount = 0.0
                     contrastAmount = 1.0
                     scale = 1.0
@@ -131,17 +138,5 @@ struct EditorView: View {
     
     private func updateEffect() {
         processedImage = viewModel.applyFilters(image: originalImage, blur: blurAmount, contrast: contrastAmount)
-    }
-}
-
-extension UIDevice {
-    static let deviceDidShakeNotification = Notification.Name("deviceDidShakeNotification")
-}
-
-extension UIWindow {
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        if motion == .motionShake {
-            NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
-        }
     }
 }
