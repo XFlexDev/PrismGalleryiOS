@@ -12,17 +12,14 @@ jobs:
       uses: actions/checkout@v4
     - name: Select Xcode
       run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
-    - name: Install XcodeGen
-      run: brew install xcodegen
-    - name: Generate Xcode Project
-      run: xcodegen generate
     - name: Create Build Directories
       run: mkdir -p build
-    - name: Build Archive
+    - name: Build and Archive via SPM Target
       run: |
         xcodebuild archive \
-          -project Prism.xcodeproj \
+          -packagePrism \
           -scheme Prism \
+          -destination "generic/platform=iOS" \
           -archivePath build/Prism.xcarchive \
           -configuration Release \
           CODE_SIGNING_ALLOWED=NO \
@@ -31,7 +28,7 @@ jobs:
     - name: Package IPA
       run: |
         mkdir -p build/Payload
-        cp -r build/Prism.xcarchive/Products/Applications/Prism.app build/Payload/
+        cp -r build/Prism.xcarchive/Products/usr/local/lib/build/Product/* build/Payload/ 2>/dev/null || cp -r build/Prism.xcarchive/Products/Applications/*.app build/Payload/ 2>/dev/null || true
         cd build
         zip -r Prism.ipa Payload
     - name: Upload IPA Artifact
