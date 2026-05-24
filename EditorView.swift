@@ -2,7 +2,7 @@ import SwiftUI
 
 struct EditorView: View {
     let originalImage: UIImage
-    @ObservedObject viewModel: GalleryViewModel
+    @ObservedObject var viewModel: GalleryViewModel
     @Environment(\.dismiss) var dismiss
     
     @State private var blurAmount: Double = 0.0
