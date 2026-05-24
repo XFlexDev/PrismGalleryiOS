@@ -15,6 +15,26 @@ struct EditorView: View {
     
     @State private var processedImage: UIImage?
     
+    var magnificationGesture: some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                scale = lastScale * value
+            }
+            .onEnded { _ in
+                lastScale = scale
+            }
+    }
+    
+    var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                offset = CGSize(width: lastOffset.width + value.translation.width, height: lastOffset.height + value.translation.height)
+            }
+            .onEnded { _ in
+                lastOffset = offset
+            }
+    }
+    
     var imageCanvas: some View {
         Group {
             if let processed = processedImage {
@@ -75,24 +95,8 @@ struct EditorView: View {
                 VStack(spacing: 0) {
                     ZStack {
                         imageCanvas
-                            .gesture(
-                                MagnificationGesture()
-                                    .onChanged { value in
-                                        scale = lastScale * value
-                                    }
-                                    .onEnded { _ in
-                                        lastScale = scale
-                                    }
-                            )
-                            .simultaneousGesture(
-                                DragGesture()
-                                    .onChanged { value in
-                                        offset = CGSize(width: lastOffset.width + value.translation.width, height: lastOffset.height + value.translation.height)
-                                    }
-                                    .onEnded { _ in
-                                        lastOffset = offset
-                                    }
-                            )
+                            .gesture(magnificationGesture)
+                            .simultaneousGesture(dragGesture)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipShape(Rectangle())
