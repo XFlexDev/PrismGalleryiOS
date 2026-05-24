@@ -1,4 +1,6 @@
 name: Prism
+options:
+  xcodeVersion: "15.0"
 targets:
   Prism:
     type: application
