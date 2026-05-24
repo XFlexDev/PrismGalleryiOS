@@ -45,9 +45,9 @@ jobs:
                 10000030 /* NativeTarget */ = { isa = PBXNativeTarget; buildConfigurationList = 10000040 /* TargetBuildConfigList */; buildPhases = (10000010 /* SourcesBuildPhase */); buildRules = ( ); dependencies = ( ); name = Prism; productNamespace = Prism; productName = Prism; productReference = 10000035 /* Prism.app */; productType = "com.apple.product-type.application"; };
                 10000035 /* Prism.app */ = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Prism.app; sourceTree = BUILT_PRODUCTS_DIR; };
                 10000038 /* Project */ = { isa = PBXProject; buildConfigurationList = 10000050 /* ProjectBuildConfigList */; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = 10000001 /* MainGroup */; productRefGroup = 10000001 /* MainGroup */; projectDirPath = ""; projectRoot = ""; targets = (10000030 /* NativeTarget */); };
-                10000041 /* ReleaseTargetConfig */ = { isa = XCBuildConfiguration; buildSettings = { INFOPLIST_FILE = Info.plist; PRODUCT_BUNDLE_IDENTIFIER = com.minimal.prismgallery; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; CURRENT_PROJECT_VERSION = 1; CODE_SIGNING_ALLOWED = NO; CODE_SIGNING_REQUIRED = NO; CODE_SIGN_IDENTITY = ""; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; }; name = Release; };
+                10000041 /* ReleaseTargetConfig */ = { isa = XCBuildConfiguration; buildSettings = { INFOPLIST_FILE = Info.plist; PRODUCT_BUNDLE_IDENTIFIER = com.minimal.prismgallery; PRODUCT_NAME = Prism; EXECUTABLE_NAME = Prism; IPHONEOS_DEPLOYMENT_TARGET = 17.0; MARKETING_VERSION = 1.0; CURRENT_PROJECT_VERSION = 1; CODE_SIGNING_ALLOWED = NO; CODE_SIGNING_REQUIRED = NO; CODE_SIGN_IDENTITY = ""; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
                 10000040 /* TargetBuildConfigList */ = { isa = XCConfigurationList; buildConfigurations = (10000041 /* ReleaseTargetConfig */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-                10000051 /* ReleaseProjectConfig */ = { isa = XCBuildConfiguration; buildSettings = { CODE_SIGNING_ALLOWED = NO; CODE_SIGNING_REQUIRED = NO; CODE_SIGN_IDENTITY = ""; }; name = Release; };
+                10000051 /* ReleaseProjectConfig */ = { isa = XCBuildConfiguration; buildSettings = { CODE_SIGNING_ALLOWED = NO; CODE_SIGNING_REQUIRED = NO; CODE_SIGN_IDENTITY = ""; PRODUCT_NAME = Prism; }; name = Release; };
                 10000050 /* ProjectBuildConfigList */ = { isa = XCConfigurationList; buildConfigurations = (10000051 /* ReleaseProjectConfig */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
             };
             rootObject = 10000038 /* Project */;
@@ -63,6 +63,7 @@ jobs:
         xcodebuild archive \
           -project Prism.xcodeproj \
           -scheme Prism \
+          -destination "generic/platform=iOS" \
           -archivePath build/Prism.xcarchive \
           -configuration Release \
           CODE_SIGNING_ALLOWED=NO \
