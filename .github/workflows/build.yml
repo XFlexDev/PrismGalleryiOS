@@ -12,6 +12,10 @@ jobs:
       uses: actions/checkout@v4
     - name: Select Xcode
       run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    - name: Install XcodeGen
+      run: brew install xcodegen
+    - name: Generate Xcode Project
+      run: xcodegen generate
     - name: Create Build Directories
       run: mkdir -p build
     - name: Build Archive
