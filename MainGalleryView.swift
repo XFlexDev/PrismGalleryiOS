@@ -92,7 +92,7 @@ struct MainGalleryView: View {
 
 struct GridCell: View {
     let asset: PhotoAsset
-    @ObservedObject viewModel: GalleryViewModel
+    @ObservedObject var viewModel: GalleryViewModel
     var animationNamespace: Namespace.ID
     @Binding var activeAsset: PhotoAsset?
     @State private var thumbnail: UIImage?
