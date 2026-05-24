@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DetailOverlayView: View {
     let photoAsset: PhotoAsset
-    @ObservedObject viewModel: GalleryViewModel
+    @ObservedObject var viewModel: GalleryViewModel
     var animationNamespace: Namespace.ID
     @Binding var activeAsset: PhotoAsset?
     @Binding var isEditing: Bool
